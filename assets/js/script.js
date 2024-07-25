@@ -5,19 +5,24 @@ let nextId = JSON.parse(localStorage.getItem("nextId"));
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
-   nextId = [lastId]+1
+   nextId = nextId+1
+   return nextId
 }
 
 // Todo: create a function to create a task card
 function createTaskCard(task) {
     console.log('no freakin way, dog')
     //TODO: add button and id to div
-    $('#todo-cards').append($('<div>').addClass('m-3 mt-border bg-white').append($('<h5>').addClass('border-bottom bg-light').text(task.title).css('background-color', 'light-gray')).append($('<p>').addClass('').text(task.description)).append($('<p>').addClass('').text(task.date)))
+    $(`${task.location}`).append($('<div>').addClass('m-3 mt-border bg-white').attr('id', task.id).append($('<h5>').addClass('border-bottom bg-light').text(task.title).css('background-color', 'light-gray')).append($('<p>').addClass('').text(task.description)).append($('<p>').addClass('').text(task.date)))
 }
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
-    
+
+    taskList.forEach(task => {
+        createTaskCard(task);
+        // $(`#task`)
+    });
 }
 
 // Todo: create a function to handle adding a new task. 
@@ -30,11 +35,14 @@ function handleAddTask(title, date, description){
 
     //make object and store in local storage
     console.log('holy moly')
+
+    generateTaskId()
     task = {
         title: titleInput,
         date: dateInput,
         description: descriptionInput,
-        status: 'to-do'
+        id: nextId,
+        location: '#todo-cards'
     }
     if (taskList){
         taskList.push(task) 
@@ -42,11 +50,12 @@ function handleAddTask(title, date, description){
         taskList = [task]
     }
 
-    //
+    //Update local storage
     console.log(task)
     console.log(taskList)
     localStorage.setItem("tasks", JSON.stringify(taskList))
     createTaskCard(task)
+    localStorage.setItem("nextId", JSON.stringify(nextId))
 }
 
 // Todo: create a function to handle deleting a task
@@ -89,9 +98,9 @@ $(document).ready(function () {
     console.log("what the hell")
     //render task list if local storage
 
-    if (localStorage){
-        renderTaskList()
-    }
+    // if (localStorage){
+    //     renderTaskList()
+    // }
 
     
 });
