@@ -5,15 +5,15 @@ let nextId = JSON.parse(localStorage.getItem("nextId"));
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
-   nextId = nextId+1
-   return nextId
+   nextId = nextId+1;
+   return nextId;
 }
 
 // Todo: create a function to create a task card
 function createTaskCard(task) {
     console.log('no freakin way, dog')
     //TODO: add button and id to div
-    $(`${task.location}`).append($('<div>').addClass('m-3 mt-border bg-white').attr('id', task.id).append($('<h5>').addClass('border-bottom bg-light').text(task.title).css('background-color', 'light-gray')).append($('<p>').addClass('').text(task.description)).append($('<p>').addClass('').text(task.date)))
+    $(`${task.location}`).append($('<div>').draggable().addClass('m-3 mt-border bg-white').append($('<h5>').addClass('border-bottom bg-light').text(task.title).css('background-color', 'light-gray')).append($('<p>').addClass('').text(task.description)).append($('<p>').addClass('').text(task.date)));
 }
 
 // Todo: create a function to render the task list and make cards draggable
@@ -21,8 +21,9 @@ function renderTaskList() {
 
     taskList.forEach(task => {
         createTaskCard(task);
-        // $(`#task`)
+        console.log(task)
     });
+
 }
 
 // Todo: create a function to handle adding a new task. 
@@ -70,37 +71,33 @@ function handleDrop(event, ui) {
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
-    renderTaskList();
-
+    
     //Listen for user inputs
     const title = $('#title-input')
     const date = $('#datepicker')
     const description = $('#description-input')
-
+    
+    
     //Make lanes droppable
-    $('#to-do').attr('ui-droppable')
+    
+    $('#to-do').droppable()
     $('#to-do').on("dropactivate", handleDrop);
-    $('#in-progress').attr('ui-droppable')
+    $('#in-progress').droppable()
     $('#in-progress').on("dropactivate", handleDrop);
-    $('#done').attr('ui-droppable')
+    $('#done').droppable()
     $('#done').on("dropactivate", handleDrop);
     $("#datepicker").datepicker({
         changeMonth: true,
         changeYear: true,
     });
-
+    
     //Listen for add task button click event in modal
     $('#add-task-btn')
     $('#add-task-btn').on('click', function(){
             handleAddTask(title, date, description)
         }
     );
-    console.log("what the hell")
-    //render task list if local storage
+console.log("what the hell")
+renderTaskList();
 
-    // if (localStorage){
-    //     renderTaskList()
-    // }
-
-    
 });
