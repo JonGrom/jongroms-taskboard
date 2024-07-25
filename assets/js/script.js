@@ -3,20 +3,39 @@ let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 // localStorage.clear()
 
-// Todo: create a function to generate a unique task id
+// generate task id
 function generateTaskId() {
    nextId = nextId+1;
    return nextId;
 }
 
-// Todo: create a function to create a task card
+// Make modal inputs and stored tasks into draggable cards
 function createTaskCard(task) {
     console.log('no freakin way, dog')
     //TODO: add button and id to div
-    $(`${task.location}`).append($('<div>').draggable().addClass('m-3 mt-border bg-white').append($('<h5>').addClass('border-bottom bg-light').text(task.title).css('background-color', 'light-gray')).append($('<p>').addClass('').text(task.description)).append($('<p>').addClass('').text(task.date)));
+    $(`${task.location}`)
+    .append($('<div>')
+        .draggable()
+        .addClass('m-3 mt-border bg-white')
+        .append($('<h5>')
+            .addClass('border-bottom bg-light')
+            .text(task.title).css('background-color', 'light-gray'))
+        .append($('<p>')
+            .addClass('')
+            .text(task.description))
+        .append($('<p>')
+            .addClass('')
+            .text(task.date))
+        .append($('<button onclick="handleDeleteTask(task)">')
+            .addClass('bg-danger border-0 text-white rounded mb-3')
+            .css('background-color', 'red')
+            .text('Delete')
+            // .attr('id', `${task.id}`)
+        )
+    );
 }
 
-// Todo: create a function to render the task list and make cards draggable
+//Render task list from local storage as cards
 function renderTaskList() {
 
     taskList.forEach(task => {
@@ -26,7 +45,7 @@ function renderTaskList() {
 
 }
 
-// Todo: create a function to handle adding a new task. 
+//Handle addition of task
 function handleAddTask(title, date, description){
 
     //get user input
@@ -34,16 +53,15 @@ function handleAddTask(title, date, description){
     const dateInput = date.val()
     const descriptionInput = description.val()
 
-    //make object and store in local storage
-    console.log('holy moly')
-
+    //generate task id
     generateTaskId()
+    //make object and store in local storage
     task = {
         title: titleInput,
         date: dateInput,
         description: descriptionInput,
         id: nextId,
-        location: '#todo-cards'
+        location: '#in-progress-cards'
     }
     if (taskList){
         taskList.push(task) 
@@ -60,13 +78,15 @@ function handleAddTask(title, date, description){
 }
 
 // Todo: create a function to handle deleting a task
-function handleDeleteTask(event){
-
+function handleDeleteTask(task){
+    console.log('delete task')
+    console.log(task)
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
  console.log('yecky')
+
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
@@ -80,12 +100,15 @@ $(document).ready(function () {
     
     //Make lanes droppable
     
-    $('#to-do').droppable()
-    $('#to-do').on("dropactivate", handleDrop);
-    $('#in-progress').droppable()
-    $('#in-progress').on("dropactivate", handleDrop);
-    $('#done').droppable()
-    $('#done').on("dropactivate", handleDrop);
+    $('#todo-cards').droppable({
+            drop: handleDrop
+        })
+    $('#in-progress-cards').droppable({
+            drop: handleDrop,
+        })
+    $('#done-cards').droppable({
+            drop: handleDrop
+    })
     $("#datepicker").datepicker({
         changeMonth: true,
         changeYear: true,
@@ -97,6 +120,11 @@ $(document).ready(function () {
             handleAddTask(title, date, description)
         }
     );
+
+    //get today from dayjs
+    const today = dayjs()
+    console.log(today)
+
 console.log("what the hell")
 renderTaskList();
 
