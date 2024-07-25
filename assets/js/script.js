@@ -1,15 +1,18 @@
 // Retrieve tasks and nextId from localStorage
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
+// localStorage.clear()
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
-    nextId = [lastId]+1
+   nextId = [lastId]+1
 }
 
 // Todo: create a function to create a task card
 function createTaskCard(task) {
-    $('<div>').attr('class', '').append
+    console.log('no freakin way, dog')
+    //TODO: add button and id to div
+    $('#todo-cards').append($('<div>').addClass('m-3 mt-border bg-white').append($('<h5>').addClass('border-bottom bg-light').text(task.title).css('background-color', 'light-gray')).append($('<p>').addClass('').text(task.description)).append($('<p>').addClass('').text(task.date)))
 }
 
 // Todo: create a function to render the task list and make cards draggable
@@ -17,17 +20,31 @@ function renderTaskList() {
     
 }
 
-// Todo: create a function to handle adding a new task
-//Add task to local storage and update it that way. 
+// Todo: create a function to handle adding a new task. 
 function handleAddTask(title, date, description){
+
+    //get user input
+    const titleInput = title.val()
+    const dateInput = date.val()
+    const descriptionInput = description.val()
+
+    //make object and store in local storage
     console.log('holy moly')
     task = {
-        title: title,
-        date: date,
-        description: description,
-        status: 'toDo'
+        title: titleInput,
+        date: dateInput,
+        description: descriptionInput,
+        status: 'to-do'
     }
-    taskList.push(task)
+    if (taskList){
+        taskList.push(task) 
+    } else {
+        taskList = [task]
+    }
+
+    //
+    console.log(task)
+    console.log(taskList)
     localStorage.setItem("tasks", JSON.stringify(taskList))
     createTaskCard(task)
 }
@@ -47,9 +64,9 @@ $(document).ready(function () {
     renderTaskList();
 
     //Listen for user inputs
-    const title = $('#title-input').val();
-    const date = $('#datepicker').val();
-    const description = $('#description-input').val();
+    const title = $('#title-input')
+    const date = $('#datepicker')
+    const description = $('#description-input')
 
     //Make lanes droppable
     $('#to-do').attr('ui-droppable')
@@ -76,4 +93,5 @@ $(document).ready(function () {
         renderTaskList()
     }
 
+    
 });
