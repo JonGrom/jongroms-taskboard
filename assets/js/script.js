@@ -1,9 +1,8 @@
 // Retrieve tasks and nextId from localStorage
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
-// localStorage.clear()
 
-// generate task id
+// Generate task id
 function generateTaskId() {
     nextId = nextId+1;
     return nextId;
@@ -16,15 +15,16 @@ function createTaskCard(task) {
     $('<div>')
         .attr('data-task-id', task.id)
         .draggable({
-            // revert: true,
+            revert: true,
             cursor: "grab",
             zIndex: 100
         })
-        .addClass('draggable m-3 border bg-white')
+        .addClass('draggable m-3 border')
         .attr('id', `${task.id}`)
         .append($('<h5>')
             .addClass('border-bottom p-2 bg-light')
-            .text(task.title).css('background-color', 'light-gray'))
+            .text(task.title)
+            .css('background-color', 'light-gray'))
         .append($('<p>')
             .addClass('pt-2')
             .text(task.description))
@@ -32,12 +32,14 @@ function createTaskCard(task) {
             .addClass('')
             .text(task.date))
         .append($('<button>')
-            .addClass('bg-danger border-0 text-white rounded mb-3')
+            .addClass('bg-danger border-1 border-white text-white rounded mb-3')
             .css('background-color', 'red')
             .text('Delete')
             .attr('data-task-id', task.id)
             .on("click", handleDeleteTask)
         );
+
+    console.log(newCard)
     return newCard
 };
 
@@ -53,7 +55,23 @@ function renderTaskList() {
     console.log(taskList);
     taskList.forEach(task => {
         if(task.id){
+            //Create card
             const card = createTaskCard(task);
+
+            //Style card depending on urgency
+            if (task.status !== 'done'){
+                if (dayjs().format('MM/DD/YYYY') == task.date){
+                    $(`#${task.id}`).css('background-color', 'yellow')
+                    card.addClass('bg-warning');
+                } else if (dayjs().isAfter(dayjs(task.date, 'day'))){
+                    card.addClass('bg-danger');
+                } else {
+                    card.addClass('bg-white');
+                }
+            } else {
+                card.addClass('bg-white');
+            }
+            //Append card to appropriate column
             $(`#${task.status}-cards`).append(card);
         };
     });
@@ -94,13 +112,11 @@ function handleDeleteTask(event){
     taskId = event.target.dataset.taskId;
     for (let task of taskList) {
       if (task.id === parseInt(taskId)) {
-        console.log(task);
         taskList = taskList.filter(function(tasks){
             return tasks !== task;
         });
       };
     };
-    console.log(taskList);
     localStorage.setItem('tasks', JSON.stringify(taskList));
     renderTaskList(); 
 
@@ -110,8 +126,6 @@ function handleDeleteTask(event){
 function handleDrop(event, ui) {
     const taskId = ui.draggable[0].dataset.taskId;
     const newStatus = event.target.id;
-    
-    console.log(taskId, newStatus)  // GARY:  check this console.log and you'll see we now know the id of the draggable and where it's dropped to
     for (let task of taskList) {
       if (task.id === parseInt(taskId)) {
         task.status = newStatus;
@@ -131,43 +145,39 @@ $(document).ready(function () {
     
     //check local storage for previous tasks
     if (taskList){
-        renderTaskList()
+        renderTaskList();
     } else {
-        taskList = []
-        nextId = 0
+        taskList = [];
+        nextId = 0;
     }
     //Listen for user inputs
-    const title = $('#title-input')
-    const date = $('#datepicker')
-    const description = $('#description-input')
+    const title = $('#title-input');
+    const date = $('#datepicker');
+    const description = $('#description-input');
     
     
     //Make lanes droppable
     
     $('#todo').droppable({
             drop: handleDrop
-        }).addClass('droppable')
+        }).addClass('droppable');
     $('#in-progress').droppable({
         drop: handleDrop
-        }).addClass('droppable')
+        }).addClass('droppable');
     $('#done').droppable({
             drop: handleDrop
-        }).addClass('droppable')
+        }).addClass('droppable');
     $("#datepicker").datepicker({
         changeMonth: true,
         changeYear: true,
     });
     
     //Listen for add task button click event in modal
-    $('#add-task-btn')
+    $('#add-task-btn');
     $('#add-task-btn').on('click', function(){
             task = handleAddTask(title, date, description)
             renderTaskList(task)
         }
     );
-
-    //get today from dayjs
-    const today = dayjs()
-    console.log(today)
 
 });
